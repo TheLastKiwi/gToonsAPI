@@ -10,4 +10,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     User findTopByEmail(String email);
 
+
 }

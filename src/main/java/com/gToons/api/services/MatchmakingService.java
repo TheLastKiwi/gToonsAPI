@@ -1,11 +1,8 @@
 package com.gToons.api.services;
 
 import com.gToons.api.services.game.Game;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.concurrent.BlockingQueue;
@@ -26,8 +23,8 @@ public class MatchmakingService {
         if(gameQueue.size()>1){
             logger.info("Game created");
             System.out.println("Game created between 2 users");
+            //TODO replace hardcoded ids
             Game g = new Game(gameQueue.poll(),35, gameQueue.poll(),17);
-            new Thread(g).start();
             return g;
         }
         return null;
