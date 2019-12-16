@@ -1,12 +1,14 @@
 package com.gToons.api.services.game;
 
 import com.gToons.api.domain.Card;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Player {
     private WebSocketSession socket;
     private int id;
@@ -39,8 +41,9 @@ public class Player {
         //remove cards from hand
         for(Card c : cards) {
             for (int i = 0; i < hand.length; i++) {
-                if (hand[i].equals(c)) {
+                if (c.equals(hand[i])) {
                     hand[i] = null;
+                    break;
                 }
             }
         }

@@ -1,12 +1,11 @@
 package com.gToons.api.services.game;
 
+import com.gToons.api.domain.Card;
 import com.google.gson.Gson;
 import lombok.Getter;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
-import com.gToons.api.domain.Card;
-import javax.websocket.Session;
+
 import java.io.IOException;
 
 @Getter
@@ -123,9 +122,17 @@ public class Game {
 
         if(p1.isReady() && p2.isReady()) {
             Player winner = calculateWinner();
+            Player loser;
+            if(winner.equals(p1)) {
+                loser = p2;
+            }
+            else {
+                loser = p1;
+            }
+
             try {
-                p1.getSocket().sendMessage(new TextMessage(gson.toJson(p1.getHand(), Card[].class)));
-                p2.getSocket().sendMessage(new TextMessage(gson.toJson(p2.getHand(), Card[].class)));
+                winner.getSocket().sendMessage(new TextMessage("Winner" + winner.getPoints()));
+                loser.getSocket().sendMessage(new TextMessage("Loser" + loser.getPoints()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
