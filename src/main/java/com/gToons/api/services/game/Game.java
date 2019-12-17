@@ -1,12 +1,14 @@
 package com.gToons.api.services.game;
 
 import com.gToons.api.domain.Card;
+import com.gToons.api.services.game.effects.Effect;
 import com.google.gson.Gson;
 import lombok.Getter;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Getter
 public class Game {
@@ -138,10 +140,67 @@ public class Game {
             }
         }
     }
+    Card allCardsInPlay[] = new Card[14];
     private Player calculateWinner(){
         //If dual-color game check color count of both
+        int position = 0;
+        for(int i = 0; i < 4; i++){
+            allCardsInPlay[position++] = p1.getBoard().board[0][i];
+            allCardsInPlay[position++] = p2.getBoard().board[0][i];
+        }
+        for(int i = 0; i < 3; i++){
+            allCardsInPlay[position++] = p1.getBoard().board[1][i];
+            allCardsInPlay[position++] = p2.getBoard().board[1][i];
+        }
+
+        Effect cardEffects[];
+        for(Card c : allCardsInPlay){
+            if(c.isNullified()){
+                continue;
+            }
+            cardEffects = c.getEffects();
+            ArrayList<Location> location;
+            for(Effect e : cardEffects){
+                location = e.getImpactedLocations();
+                for(Location l : location){
+                    Card effectedCard = getCardFromLocation(l);
+                    if(e.appliesTo(effectedCard,allCardsInPlay)) {
+                        effectedCard.addUnappliedEffect(e);
+                    }
+                }
+            }
+        }
+        for(Card c: allCardsInPlay){
+            for(Effect e : c.getUnappliedEffects()){
+                e.applyTo(c);
+            }
+        }
+
+        /*
+        for every card in play
+            Effect[] = card.getEffects()
+            for every effect
+                Location[] = effect.getImpactedLocations()
+                    for every location
+                        effectedCard = board.getcard(xy)
+                        effectedCard.addUnappliedEffect(effect)
+
+
+         for every card in play
+            card.applyEffects -> if effect.appliesTo(card)
+                                        then effect.applyTo(card)
+
+
+         */
 
         return p1;
+    }
+
+    private Card getCardFromLocation(Location location){
+        if(location.owner.equals(p1.getSocket().getId())){
+            return p1.getBoard().board[location.getY()][location.getX()];
+        }
+        return p2.getBoard().board[location.getY()][location.getX()];
     }
     private void ifBothReadySendHands(){
 

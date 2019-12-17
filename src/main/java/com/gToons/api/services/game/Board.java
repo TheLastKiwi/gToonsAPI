@@ -4,6 +4,7 @@ import com.gToons.api.domain.Card;
 
 public class Board {
     Card board[][] = new Card[4][4];
+    Card nullCard = new Card();
 
     public void playCards(Card cards[]){
 
@@ -16,9 +17,24 @@ public class Board {
         }
         for(int i = 0; i < cards.length; i++){
             board[startRow][i] = cards[i];
+            board[startRow][i].finalizeLocation(new Location(startRow,i,cards[i].getOwner()));
         }
+
     }
     public void playLastCard(Card c){
         board[1][2] = c;
+        board[1][2].finalizeLocation(new Location(1,2,c.getOwner()));
+
     }
+    public Card getCard(int x, int y){
+        //valid position
+        if(isValidPosition(x,y)) {
+            return board[y][x];
+        }
+        return nullCard;
+    }
+    private boolean isValidPosition(int x, int y){
+        return !(x < 0 || y < 0 || x > 3 || y > 1 || (y == 1 && x == 3));
+    }
+
 }
