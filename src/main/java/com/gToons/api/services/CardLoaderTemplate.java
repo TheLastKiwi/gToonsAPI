@@ -2,7 +2,6 @@ package com.gToons.api.services;
 
 import com.gToons.api.domain.Card;
 import com.gToons.api.services.game.effects.Effect;
-import org.springframework.security.core.parameters.P;
 
 public class CardLoaderTemplate {
     private int id;
@@ -15,7 +14,7 @@ public class CardLoaderTemplate {
     private String attributes[];
     private Object[][] effects;
 
-    Card toCard(){
+    public Card toCard(){
         Card c = new Card();
         c.setId(id);
         c.setName(name);

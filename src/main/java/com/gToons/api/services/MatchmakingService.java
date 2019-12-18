@@ -17,7 +17,7 @@ public class MatchmakingService {
     BlockingQueue<WebSocketSession> gameQueue = new LinkedBlockingQueue<>();
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
-    final Card cards[] = loadCards();
+
     public Game findGame(WebSocketSession s){
         logger.info("User added to gameQueue");
         gameQueue.add(s);
@@ -29,30 +29,9 @@ public class MatchmakingService {
             logger.info("Game created");
             System.out.println("Game created between 2 users");
             //TODO replace hardcoded ids
-            Game g = new Game(gameQueue.poll(),35, gameQueue.poll(),17);
+            Game g = new Game(gameQueue.poll(),100, gameQueue.poll(),200);
             return g;
         }
         return null;
-    }
-    private Card[] loadCards(){
-        long now = System.currentTimeMillis();
-        String path = "cards100.cfg";
-        String data = "";
-        CardLoaderTemplate cardTemplates[] = new CardLoaderTemplate[0];
-        Gson gson = new Gson();
-        try {
-            data = new String(Files.readAllBytes(Paths.get(path)));
-            cardTemplates = gson.fromJson(data,CardLoaderTemplate[].class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("File read error");
-        }
-        Card cards[] = new Card[cardTemplates.length];
-        for(int i = 0; i < cardTemplates.length; i++){
-            cards[i] = cardTemplates[i].toCard();
-        }
-        System.out.println(System.currentTimeMillis()-now);
-        return cards;
-
     }
 }

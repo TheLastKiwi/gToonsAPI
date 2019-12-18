@@ -1,6 +1,7 @@
 package com.gToons.api.services.game;
 
 import com.gToons.api.domain.Card;
+import com.gToons.api.services.CardLoaderTemplate;
 import com.gToons.api.services.game.effects.Effect;
 import com.google.gson.Gson;
 import lombok.Getter;
@@ -8,12 +9,15 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @Getter
 public class Game {
-    static Card[] allCards = {new Card(1), new Card(2), new Card(3), new Card(4), new Card(5), new Card(6), new Card(7), new Card(8), new Card(9), new Card(10), new Card(11), new Card(12)};
 
+    //static Card[] allCards = {new Card(1), new Card(2), new Card(3), new Card(4), new Card(5), new Card(6), new Card(7), new Card(8), new Card(9), new Card(10), new Card(11), new Card(12)};
+    static final Card allCards[] = loadCards();
     Player p1, p2;
     int phase = 0;
     Gson gson = new Gson();
@@ -231,6 +235,28 @@ public class Game {
             return p1;
         }
         return p2;
+    }
+
+    private static Card[] loadCards(){
+        long now = System.currentTimeMillis();
+        String path = "cards100.cfg";
+        String data = "";
+        CardLoaderTemplate cardTemplates[] = new CardLoaderTemplate[0];
+        Gson gson = new Gson();
+        try {
+            data = new String(Files.readAllBytes(Paths.get(path)));
+            cardTemplates = gson.fromJson(data,CardLoaderTemplate[].class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("File read error");
+        }
+        Card cards[] = new Card[cardTemplates.length+1];
+        cards[0] = null;
+        for(int i = 0; i < cardTemplates.length; i++){
+            cards[i+1] = cardTemplates[i].toCard();
+        }
+        System.out.println(System.currentTimeMillis()-now);
+        return cards;
     }
 
 }

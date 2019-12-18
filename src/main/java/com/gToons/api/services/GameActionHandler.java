@@ -31,7 +31,6 @@ public class GameActionHandler extends TextWebSocketHandler {
         }
     }
 
-    int messageCounter = 0;
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         //Use gson to deserialize message payload into Action object
