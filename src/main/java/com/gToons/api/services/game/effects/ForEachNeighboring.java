@@ -6,6 +6,13 @@ import com.gToons.api.services.game.Location;
 import java.util.ArrayList;
 
 public class ForEachNeighboring  extends Effect {
+    ForEachNeighboring(int v, boolean m, String attr[]){
+        super(v,m,attr);
+    }
+    public Effect copy(){
+        ForEachNeighboring effect = new ForEachNeighboring(value,multiplier,attributes);
+        return effect;
+    }
     @Override
     public ArrayList<Location> getImpactedLocations() {
         return null;

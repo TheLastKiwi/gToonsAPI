@@ -7,6 +7,15 @@ import java.util.ArrayList;
 
 public class IfOppositeIs  extends Effect {
     Card opposite;
+    IfOppositeIs(int v, boolean m, String attr[]){
+        super(v,m,attr);
+    }
+    public Effect copy(){
+        IfOppositeIs effect = new IfOppositeIs(value,multiplier,attributes);
+        effect.opposite=opposite;
+        return effect;
+    }
+
     @Override
     public ArrayList<Location> getImpactedLocations() {
         return null;

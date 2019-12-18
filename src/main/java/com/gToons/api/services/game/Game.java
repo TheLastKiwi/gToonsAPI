@@ -153,7 +153,7 @@ public class Game {
             allCardsInPlay[position++] = p2.getBoard().board[1][i];
         }
 
-        Effect cardEffects[];
+        ArrayList<Effect> cardEffects;
         for(Card c : allCardsInPlay){
             if(c.isNullified()){
                 continue;

@@ -6,6 +6,13 @@ import com.gToons.api.services.game.Location;
 import java.util.ArrayList;
 
 public class IfAnyInPlay  extends Effect {
+    IfAnyInPlay(int v, boolean m, String attr[]){
+        super(v,m,attr);
+    }
+    public Effect copy(){
+        IfAnyInPlay effect = new IfAnyInPlay(value,multiplier,attributes);
+        return effect;
+    }
     @Override
     public ArrayList<Location> getImpactedLocations() {
         return null;

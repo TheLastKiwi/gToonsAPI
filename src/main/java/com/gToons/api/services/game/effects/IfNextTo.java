@@ -6,6 +6,13 @@ import com.gToons.api.services.game.Location;
 import java.util.ArrayList;
 
 public class IfNextTo extends Effect {
+    IfNextTo(int v, boolean m, String attr[]){
+        super(v,m,attr);
+    }
+    public Effect copy(){
+        IfNextTo effect = new IfNextTo(value,multiplier,attributes);
+        return effect;
+    }
     @Override
     public ArrayList<Location> getImpactedLocations() {
         return null;

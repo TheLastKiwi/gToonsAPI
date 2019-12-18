@@ -36,9 +36,14 @@ public class Card {
 
     @Column(nullable = false)
     String name = "";
-
+    @Column(nullable = false)
+    String rarity;
+    @Column(nullable = false)
+    String character;
+    @Column
+    String description;
     @Transient
-    Effect effects[];
+    ArrayList<Effect> effects = new ArrayList<>();
 
     @Transient
     HashSet<String> attributes = new HashSet<>();
@@ -47,6 +52,7 @@ public class Card {
     @Transient
     Location location;
 
+    @Column(nullable = false)
     String color;
     int points;
 
@@ -59,7 +65,6 @@ public class Card {
 
     public Card(int id){
         this.id = id;
-        attributes.add("");
     }
     public void addAttribute(String s){
         attributes.add(s);
@@ -87,6 +92,40 @@ public class Card {
     }
     public void addUnappliedEffect(Effect e){
         unappliedEffects.add(e);
+    }
+    public void addEffect(Effect e){
+        effects.add(e);
+    }
+    //deep copy
+    /*
+        int id;
+
+    @Column(nullable = false)
+    String name = "";
+    @Column(nullable = false)
+    String rarity;
+    @Column(nullable = false)
+    String character;
+    @Column
+    String description;
+    @Transient
+    ArrayList<Effect> effects = new ArrayList<>();
+
+    @Transient
+    HashSet<String> attributes = new HashSet<>();
+     */
+    public Card copy(){
+        Card card = new Card();
+        card.setId(id);
+        card.setName(name);
+        card.setRarity(rarity);
+        card.setCharacter(character);
+        card.setDescription(description);
+        for(Effect e: effects){
+            card.addEffect(e.copy());
+        }
+        for(String attribute : attributes) card.addAttribute(attribute);
+        return card;
     }
 
 }
