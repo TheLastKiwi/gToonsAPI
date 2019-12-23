@@ -201,7 +201,7 @@ public class Game {
     }
 
     private Card getCardFromLocation(Location location){
-        if(location.owner.equals(p1.getSocket().getId())){
+        if(location.owner.equals(p1)){
             return p1.getBoard().board[location.getY()][location.getX()];
         }
         return p2.getBoard().board[location.getY()][location.getX()];
@@ -240,7 +240,7 @@ public class Game {
     private static Card[] loadCards(){
         long now = System.currentTimeMillis();
         String path = "cards100.cfg";
-        String data = "";
+        String data;
         CardLoaderTemplate cardTemplates[] = new CardLoaderTemplate[0];
         Gson gson = new Gson();
         try {

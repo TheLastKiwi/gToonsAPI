@@ -20,47 +20,47 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-@Entity
+//@Entity
 @Builder
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "card", catalog = "gtoons")
+//@Table(name = "card", catalog = "gtoons")
 public class Card {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     String name = "";
-    @Column(nullable = false)
+//    @Column(nullable = false)
     String rarity;
-    @Column(nullable = false)
+//    @Column(nullable = false)
     String character;
-    @Column
+//    @Column
     String description;
-    @Transient
+//    @Transient
     ArrayList<Effect> effects = new ArrayList<>();
 
-    @Transient
+//    @Transient
     HashSet<String> attributes = new HashSet<>();
-    @Transient
+//    @Transient
     ArrayList<Effect> unappliedEffects = new ArrayList<>();
-    @Transient
+//    @Transient
     Location location;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     String color;
     int points;
 
-    @Transient
+//    @Transient
     public boolean nullified;
-    @Transient
+//    @Transient
     Player owner;
-    @Transient
+//    @Transient
     int bonusPoints;
 
     public Card(int id){
