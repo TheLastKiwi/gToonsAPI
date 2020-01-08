@@ -33,6 +33,9 @@ public class User {
     @Column(name = "password_hash", columnDefinition = "CHAR(61)", nullable = false)
     private String passwordHash;
 
+    @Column(nullable = false)
+    private Integer points;
+
     @Override
     public String toString(){
         return id + ",\"" + username + "\",\"" + email + "\",\"" + passwordHash + "\"";

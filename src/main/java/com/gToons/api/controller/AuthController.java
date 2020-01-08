@@ -97,7 +97,7 @@ public class AuthController {
         User result = userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/users/{username}")
+                .fromCurrentContextPath().path("/api/auth/register")
                 .buildAndExpand(result.getUsername()).toUri();
         //TODO Send email verification
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));

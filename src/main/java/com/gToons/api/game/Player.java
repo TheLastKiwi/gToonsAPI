@@ -26,7 +26,6 @@ public class Player {
     public Player(WebSocketSession wss, int pid){
         socket = wss;
         id = pid;
-        //Todo get deck from DB
     }
     public WebSocketSession getSocket(){
         return socket;

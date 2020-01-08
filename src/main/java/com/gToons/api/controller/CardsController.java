@@ -8,14 +8,19 @@ import com.gToons.api.model.UserDeckCard;
 import com.gToons.api.payload.ApiResponse;
 import com.gToons.api.repository.UserCollectionRepository;
 import com.gToons.api.repository.UserDeckCardRepository;
+import com.gToons.api.repository.UserRepository;
 import com.gToons.api.security.UserPrincipal;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,17 +33,19 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class CardsController {
     @Autowired
-    UserDeckCardRepository userDeckCardRepository;
+    private UserDeckCardRepository userDeckCardRepository;
 
     @Autowired
-    UserCollectionRepository userCollectionRepository;
+    private UserCollectionRepository userCollectionRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     final Gson gson = new Gson();
 
     @GetMapping("/getDeck")
     public ResponseEntity<?> getDeck(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
+        UserPrincipal user = getUser();
 
         Optional<List<UserDeckCard>> oudc = userDeckCardRepository.findByUserId(user.getId());
         if(!oudc.isPresent()){
@@ -50,18 +57,14 @@ public class CardsController {
         for(int i = 0; i < 12; i++){
             cards.add(CardService.getAllCards().get(udc.get(i).getCardId()).copy());
         }
-//        ArrayList<Card> cards = new ArrayList<>();
-//        Game g = new Game();
-//        for(int i = 1; i < 13; i++)cards.add(Game.allCards[i].copy());
-
 
         return ResponseEntity.ok(new ApiResponse(true,gson.toJson(cards)));
     }
 
     @GetMapping("/getCollection")
     public ResponseEntity<?> getCollection(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
+        UserPrincipal user = getUser();
+
         ArrayList<Card> cards = new ArrayList<>();
         Optional<List<UserCollection>> ouc = userCollectionRepository.findByUserId(user.getId());
         if(ouc.isPresent()) {
@@ -70,13 +73,32 @@ public class CardsController {
                 cards.add(CardService.getAllCards().get(userCollection.get(i).getCardId())
                         .copy());
             }
-//        ArrayList<Card> cards = new ArrayList<>();
-//        Game g = new Game();
-//        for(int i = 1; i < 95; i++)cards.add(Game.allCards[i].copy());
         }
-
-
         return ResponseEntity.ok(new ApiResponse(true,gson.toJson(cards)));
+    }
+
+    @Transactional
+    @PostMapping("/buyPack")
+    public ResponseEntity<?> buyPack() {
+        UserPrincipal user = getUser();
+        if(user.getPoints() < 200){
+            return ResponseEntity.badRequest().body(new ApiResponse(false,"Insufficient Points"));
+        }
+        userRepository.setPoints(user.getId(),user.getPoints()-200);
+
+        List<Card> pack = CardService.generatePack();
+        List<UserCollection> saveCards= new ArrayList<>();
+        for(Card c : pack){
+            saveCards.add(new UserCollection(user.getId(), c.getId()));
+        }
+        userCollectionRepository.saveAll(saveCards);
+        return ResponseEntity.ok(new ApiResponse(true, gson.toJson(pack)));
+    }
+
+    private UserPrincipal getUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
+        return user;
     }
 
 }

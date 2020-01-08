@@ -10,11 +10,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @Component
 public class CardService {
 
     private static final List<Card> allCards = loadCards();
+    private static List<Card> commons;
+    private static List<Card> uncommons;
+    private static List<Card> rares;
+    private static List<Card> slams;
+
+
 
     public static List<Card> getAllCards(){
         //if(allCards == null)allCards = loadCards();
@@ -44,11 +51,33 @@ public class CardService {
         cards.add(null);
 //        StringBuilder str = new StringBuilder();
 //        str.append("[\n");
-        for(CardLoaderTemplate c : cardTemplates){
+
+        //Initialization
+        commons = new ArrayList<>();
+        uncommons = new ArrayList<>();
+        rares = new ArrayList<>();
+        slams = new ArrayList<>();
+        for(CardLoaderTemplate clt : cardTemplates){
 //            str.append("{\n");
 //            str.append(cardTemplates[i]);
 //            str.append("},\n");
-            cards.add(c.toCard());
+            Card c = clt.toCard();
+            //TODO change rarity to enum
+            switch (c.getRarity()){
+                case "COMMON":
+                    commons.add(c);
+                    break;
+                case "UNCOMMON":
+                    uncommons.add(c);
+                    break;
+                case "RARE":
+                    rares.add(c);
+                    break;
+                case "SLAM":
+                    slams.add(c);
+                    break;
+            }
+            cards.add(c);
         }
 //        str.append("]\n");
 //        try {
@@ -58,5 +87,36 @@ public class CardService {
 //        }
 //        System.out.println(System.currentTimeMillis()-now);
         return cards;
+    }
+
+    public static List<Card> generatePack(){
+        Random rnd = new Random(System.currentTimeMillis());
+        List<Card> pack = new ArrayList<>();
+        int rnum;
+        int rplus = 0;
+        for(int i = 0; i < 5; i++){
+            rnum = rnd.nextInt(100);
+            if(rnum>95){
+                rplus++;
+                pack.add(slams.get(rnd.nextInt(slams.size())).copy());
+            } else if(rnum > 88){
+                rplus++;
+                pack.add(rares.get(rnd.nextInt(rares.size())).copy());
+            } else  if(rnum > 79){
+                pack.add(uncommons.get(rnd.nextInt(uncommons.size())).copy());
+            } else{
+                pack.add(commons.get(rnd.nextInt(commons.size())).copy());
+            }
+        }
+        //no rares or slams
+        if(rplus == 0){
+            rnum = rnd.nextInt(100);
+            if(rnum > 97){
+                pack.set(rnd.nextInt(5), slams.get(rnd.nextInt(slams.size())).copy());
+            } else{
+                pack.add(rnd.nextInt(5), rares.get(rnd.nextInt(rares.size())).copy());
+            }
+        }
+        return pack;
     }
 }

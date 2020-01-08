@@ -25,9 +25,10 @@ import static com.gToons.api.game.Player.HAND_SIZE;
 @Getter
 @NoArgsConstructor
 public class Game {
+    //TODO REWORK EFFECTS TO BE AGNOSTIC OF CARD
 
-    //static Card[] allCards = {new Card(1), new Card(2), new Card(3), new Card(4), new Card(5), new Card(6), new Card(7), new Card(8), new Card(9), new Card(10), new Card(11), new Card(12)};
-    //TODO Move allCards to another file, does not belong in Game
+    //TODO add functionality to send back game state at each card reveal
+
     Player p1, p2;
     int phase = 0;
     Gson gson = new Gson();

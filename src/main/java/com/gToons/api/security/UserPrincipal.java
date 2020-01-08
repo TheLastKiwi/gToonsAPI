@@ -16,6 +16,7 @@ public class UserPrincipal implements UserDetails {
     private Integer id;
     private String username;
 
+    private Integer points;
     //Doesn't transfer when serializing
     @JsonIgnore
     private String email;
@@ -23,11 +24,13 @@ public class UserPrincipal implements UserDetails {
     @JsonIgnore
     private String passwordHash;
 
-    public UserPrincipal(Integer id, String username, String email, String passwordHash) {
+    public UserPrincipal(Integer id, String username, String email, String passwordHash, Integer points) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.passwordHash = passwordHash; }
+        this.passwordHash = passwordHash;
+        this.points = points;
+    }
 
     public static UserPrincipal create(User user) {
 
@@ -35,7 +38,8 @@ public class UserPrincipal implements UserDetails {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getPasswordHash()
+                user.getPasswordHash(),
+                user.getPoints()
         );
     }
 

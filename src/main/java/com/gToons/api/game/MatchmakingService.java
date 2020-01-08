@@ -18,12 +18,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Component
 public class MatchmakingService {
     @Autowired
-    UserDeckCardRepository ucdr;
+    UserDeckCardRepository udcr;
     BlockingQueue<Player> gameQueue = new LinkedBlockingQueue<>();
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Game findGame(WebSocketSession s, int id){
-        Optional<List<UserDeckCard>> opCards = ucdr.findByUserId(id);
+        Optional<List<UserDeckCard>> opCards = udcr.findByUserId(id);
         if(opCards.isPresent()) {
             logger.info("User added to gameQueue");
             gameQueue.add(new Player(s, id));
@@ -37,9 +37,8 @@ public class MatchmakingService {
         if(gameQueue.size()>1){
             logger.info("Game created");
             System.out.println("Game created between 2 users");
-            //TODO replace hardcoded ids
 
-            Game g = new Game(gameQueue.poll(),gameQueue.poll(),ucdr);
+            Game g = new Game(gameQueue.poll(),gameQueue.poll(),udcr);
             return g;
         }
         return null;

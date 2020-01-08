@@ -1,6 +1,7 @@
 package com.gToons.api.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "user_collection", catalog = "gtoons")
 public class UserCollection {
 
@@ -23,4 +25,9 @@ public class UserCollection {
 
     @Column(columnDefinition = "INTEGER", nullable = false)
     private Integer cardId;
+
+    public UserCollection(Integer uid, Integer cid){
+        userId = uid;
+        cardId = cid;
+    }
 }

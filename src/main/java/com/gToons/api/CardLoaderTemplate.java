@@ -2,7 +2,9 @@ package com.gToons.api;
 
 import com.gToons.api.game.effects.Effect;
 import com.gToons.api.model.Card;
+import lombok.Getter;
 
+@Getter
 public class CardLoaderTemplate {
     private int id;
     private String name;
