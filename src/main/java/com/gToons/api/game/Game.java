@@ -1,6 +1,7 @@
 package com.gToons.api.game;
 
 import com.gToons.api.CardLoaderTemplate;
+import com.gToons.api.CardService;
 import com.gToons.api.game.effects.Effect;
 import com.gToons.api.model.Card;
 import com.gToons.api.model.UserDeckCard;
@@ -27,7 +28,6 @@ public class Game {
 
     //static Card[] allCards = {new Card(1), new Card(2), new Card(3), new Card(4), new Card(5), new Card(6), new Card(7), new Card(8), new Card(9), new Card(10), new Card(11), new Card(12)};
     //TODO Move allCards to another file, does not belong in Game
-    public static final Card allCards[] = loadCards();
     Player p1, p2;
     int phase = 0;
     Gson gson = new Gson();
@@ -42,13 +42,14 @@ public class Game {
         //If possible also send jwt or user ID though here encapsulated from controller headers
     }
     private Card[] getDeckFromDB(int pid){
-        List<Integer> intCards = new ArrayList();
+        List<Integer> intCards = new ArrayList<>();
+        ArrayList<Card> cards = new ArrayList<>();
         Optional<List<UserDeckCard>> opCards = userDeckCardRepository.findByUserId(pid);
-
-        List<UserDeckCard> pCards = opCards.get();
-        for(UserDeckCard c : pCards){
-            intCards.add(c.getCardId());
-        }
+        if(opCards.isPresent()) {
+            List<UserDeckCard> pCards = opCards.get();
+            for (UserDeckCard c : pCards) {
+                intCards.add(c.getCardId());
+            }
 
 //        if(pid == 100) {
 //            //DB Call return card from deck as a List<Integer>
@@ -57,11 +58,14 @@ public class Game {
 //        else {
 //            intCards = Arrays.asList(21,22,23,24,25,26);
 //        }
-        Card cards[] = new Card[HAND_SIZE];
-        for(int i = 0; i < intCards.size(); i++){
-            cards[i] = allCards[intCards.get(i)].copy();
+
+
+            for (int i = 0; i < intCards.size(); i++) {
+                cards.add(CardService.getAllCards()[intCards.get(i)].copy());
+            }
         }
-        return cards;
+
+        return (Card[])cards.toArray();
     }
     public void action(Action action, WebSocketSession session){
         Player player = getPlayer(session);
@@ -261,7 +265,7 @@ public class Game {
     private Card[] getCardsFromInts(int intCards[]){
         Card cards[] = new Card[intCards.length];
         for(int i = 0; i < intCards.length; i++){
-            cards[i] = allCards[intCards[i]];
+            cards[i] = CardService.getAllCards()[intCards[i]];
         }
         return cards;
     }
@@ -271,44 +275,4 @@ public class Game {
         }
         return p2;
     }
-
-    private static Card[] loadCards(){
-        long now = System.currentTimeMillis();
-        String path = System.getProperty("user.dir") + "/src/main/resources/Cards100.cfg";
-        String data;
-        CardLoaderTemplate cardTemplates[] = new CardLoaderTemplate[0];
-        Gson gson = new Gson();
-        String pts[] = new String[0];
-        try {
-            data = new String(Files.readAllBytes(Paths.get(path)));
-            cardTemplates = gson.fromJson(data,CardLoaderTemplate[].class);
-//            String points = new String(Files.readAllBytes(Paths.get("pointsForCards.txt")));
-//            pts = points.split("\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("File read error");
-        }
-//        for(int i = 0; i < cardTemplates.length; i++){
-//            cardTemplates[i].points = Integer.parseInt(pts[i]);
-//        }
-        Card cards[] = new Card[cardTemplates.length+1];
-        cards[0] = null;
-//        StringBuilder str = new StringBuilder();
-//        str.append("[\n");
-        for(int i = 0; i < cardTemplates.length; i++){
-//            str.append("{\n");
-//            str.append(cardTemplates[i]);
-//            str.append("},\n");
-            cards[i+1] = cardTemplates[i].toCard();
-        }
-//        str.append("]\n");
-//        try {
-//            Files.write(Paths.get("Cards100pts.cfg"),str.toString().getBytes());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        System.out.println(System.currentTimeMillis()-now);
-        return cards;
-    }
-
 }

@@ -1,11 +1,16 @@
 package com.gToons.api.model;
 
+import lombok.Getter;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@Entity
+@Getter
 @Table(name = "user_collection", catalog = "gtoons")
 public class UserCollection {
 

@@ -1,9 +1,12 @@
 package com.gToons.api.controller;
 
+import com.gToons.api.CardService;
 import com.gToons.api.game.Game;
 import com.gToons.api.model.Card;
+import com.gToons.api.model.UserCollection;
 import com.gToons.api.model.UserDeckCard;
 import com.gToons.api.payload.ApiResponse;
+import com.gToons.api.repository.UserCollectionRepository;
 import com.gToons.api.repository.UserDeckCardRepository;
 import com.gToons.api.security.UserPrincipal;
 import com.google.gson.Gson;
@@ -27,44 +30,50 @@ public class CardsController {
     @Autowired
     UserDeckCardRepository userDeckCardRepository;
 
+    @Autowired
+    UserCollectionRepository userCollectionRepository;
+
+    final Gson gson = new Gson();
+
     @GetMapping("/getDeck")
     public ResponseEntity<?> getDeck(){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
-//
-//        Optional<List<UserDeckCard>> oudc = userDeckCardRepository.findByUserId(user.getId());
-//        if(!oudc.isPresent()){
-//            return ResponseEntity.ok(new ApiResponse(false, "{[]}"));
-//        }
-//        List<UserDeckCard> udc = oudc.get();
-//
-//        ArrayList<Card> cards = new ArrayList<>();
-//        for(int i = 0; i < 12; i++){
-//            cards.add(Game.allCards[udc.get(i).getCardId()].copy());
-//        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
+
+        Optional<List<UserDeckCard>> oudc = userDeckCardRepository.findByUserId(user.getId());
+        if(!oudc.isPresent()){
+            return ResponseEntity.ok(new ApiResponse(false, "{[]}"));
+        }
+        List<UserDeckCard> udc = oudc.get();
+
         ArrayList<Card> cards = new ArrayList<>();
-        Game g = new Game();
-        for(int i = 1; i < 13; i++)cards.add(Game.allCards[i].copy());
-        Gson gson = new Gson();
+        for(int i = 0; i < 12; i++){
+            cards.add(CardService.getAllCards()[udc.get(i).getCardId()].copy());
+        }
+//        ArrayList<Card> cards = new ArrayList<>();
+//        Game g = new Game();
+//        for(int i = 1; i < 13; i++)cards.add(Game.allCards[i].copy());
+
 
         return ResponseEntity.ok(new ApiResponse(true,gson.toJson(cards)));
     }
 
     @GetMapping("/getCollection")
     public ResponseEntity<?> getCollection(){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
-//
-//        List<UserDeckCard> udc = userDeckCardRepository.findByUserId(user.getId()).get();
-//
-//        ArrayList<Card> cards = new ArrayList<>();
-//        for(int i = 0; i < udc.size(); i++){
-//            cards.add(Game.allCards[udc.get(i).getCardId()].copy());
-//        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
         ArrayList<Card> cards = new ArrayList<>();
-        Game g = new Game();
-        for(int i = 1; i < 15; i++)cards.add(Game.allCards[i].copy());
-        Gson gson = new Gson();
+        Optional<List<UserCollection>> ouc = userCollectionRepository.findByUserId(user.getId());
+        if(ouc.isPresent()) {
+            List<UserCollection> userCollection = ouc.get();
+            for (int i = 0; i < userCollection.size(); i++) {
+                cards.add(CardService.getAllCards()[userCollection.get(i).getCardId()].copy());
+            }
+//        ArrayList<Card> cards = new ArrayList<>();
+//        Game g = new Game();
+//        for(int i = 1; i < 95; i++)cards.add(Game.allCards[i].copy());
+        }
+
 
         return ResponseEntity.ok(new ApiResponse(true,gson.toJson(cards)));
     }
