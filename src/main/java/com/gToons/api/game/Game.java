@@ -34,14 +34,14 @@ public class Game {
     UserDeckCardRepository userDeckCardRepository;
     public Game(Player p1, Player p2, @Autowired UserDeckCardRepository  udcr){
         userDeckCardRepository = udcr;
-        Card d[] = getDeckFromDB(p1.getId());
+        List<Card> d = getDeckFromDB(p1.getId());
         p1.setDeck(new Deck(d));
         d = getDeckFromDB(p2.getId());
         p2.setDeck(new Deck(d));
         //Todo pick a random card from both decks, return both to users, record the color
         //If possible also send jwt or user ID though here encapsulated from controller headers
     }
-    private Card[] getDeckFromDB(int pid){
+    private List<Card> getDeckFromDB(int pid){
         List<Integer> intCards = new ArrayList<>();
         ArrayList<Card> cards = new ArrayList<>();
         Optional<List<UserDeckCard>> opCards = userDeckCardRepository.findByUserId(pid);
@@ -61,11 +61,11 @@ public class Game {
 
 
             for (int i = 0; i < intCards.size(); i++) {
-                cards.add(CardService.getAllCards()[intCards.get(i)].copy());
+                cards.add(CardService.getAllCards().get(intCards.get(i)).copy());
             }
         }
 
-        return (Card[])cards.toArray();
+        return cards;
     }
     public void action(Action action, WebSocketSession session){
         Player player = getPlayer(session);
@@ -84,7 +84,7 @@ public class Game {
                     ifBothReadyAdvancePhase();
                     break;
                 case 1: //Played cards round 1 - Receive 4 cards in playedCards | ***Return opponents cards
-                    Card r1PlayedCards[] = getCardsFromInts(action.getPlayedCards());
+                    List<Card> r1PlayedCards = getCardsFromInts(action.getPlayedCards());
                     player.playCards(r1PlayedCards);
                     playCards(r1PlayedCards,player.getBoard());
 
@@ -93,7 +93,7 @@ public class Game {
                     ifBothReadyAdvancePhase();
                     break;
                 case 2: //Discard option - Receive 0-2 cards in discardedCards | ***Return a hand of 6 cards with discarded cards removed
-                    Card discardedCards[] = getCardsFromInts(action.getDiscardedCards());
+                    List<Card>  discardedCards = getCardsFromInts(action.getDiscardedCards());
                     player.discardCards(discardedCards);
                     player.draw();
 
@@ -102,7 +102,7 @@ public class Game {
                     ifBothReadyAdvancePhase();
                     break;
                 case 3: //Played cards round 2 - receive 2 cards in playedCards | ***Return opponents cards
-                    Card r2PlayedCards[] = getCardsFromInts(action.getPlayedCards());
+                    List<Card>  r2PlayedCards = getCardsFromInts(action.getPlayedCards());
                     player.playCards(r2PlayedCards);
                     playCards(r2PlayedCards,player.getBoard());
 
@@ -111,11 +111,11 @@ public class Game {
                     ifBothReadyAdvancePhase();
                     break;
                 case 4: //Replace card option - receive 1 card in lastCard and replace(boolean) | Return winner/loser
-                    Card lastCard[] =  getCardsFromInts(new int[]{action.lastCard});
+                    List<Card>  lastCard =  getCardsFromInts(new ArrayList<>(action.lastCard));
                     if(action.isReplace()){
                         player.setPoints(-10);
                     }
-                    playLastCard(lastCard[0],player);
+                    playLastCard(lastCard.get(0),player);
 
                     player.setReady(true);
                     ifBothReadySendLastCard(player);
@@ -259,13 +259,13 @@ public class Game {
     private void playLastCard(Card c, Player player){
         player.board.playLastCard(c);
     }
-    private void playCards(Card cards[], Board board){
+    private void playCards(List<Card>  cards, Board board){
         board.playCards(cards);
     }
-    private Card[] getCardsFromInts(int intCards[]){
-        Card cards[] = new Card[intCards.length];
-        for(int i = 0; i < intCards.length; i++){
-            cards[i] = CardService.getAllCards()[intCards[i]];
+    private List<Card>  getCardsFromInts(List<Integer> intCards){
+        List<Card> cards= new ArrayList<>();
+        for(int i = 0; i < intCards.size(); i++){
+            cards.add(CardService.getAllCards().get(intCards.get(i)));
         }
         return cards;
     }

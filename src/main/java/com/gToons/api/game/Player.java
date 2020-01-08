@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -14,7 +17,7 @@ public class Player {
     private int id;
     private boolean isReady = false;
     private Deck deck;
-    private Card hand[] = new Card[6];
+    private List<Card> hand = new ArrayList<>();
     int points;
     Board board = new Board();
 
@@ -30,24 +33,24 @@ public class Player {
     }
     public void draw(){
         //You only draw until full so draw a card for every open slot in your hand
-        for(int i = 0; i < hand.length; i++){
-            if(hand[i] == null){
-                hand[i] = deck.draw();
+        for(int i = 0; i < hand.size(); i++){
+            if(hand.get(i) == null){
+                hand.set(i, deck.draw());
             }
         }
     }
-    public void playCards(Card[] cards){
+    public void playCards(List<Card> cards){
         //remove cards from hand
         for(Card c : cards) {
-            for (int i = 0; i < hand.length; i++) {
-                if (c.equals(hand[i])) {
-                    hand[i] = null;
+            for (int i = 0; i < hand.size(); i++) {
+                if (c.equals(hand.get(i))) {
+                    hand.set(i, null);
                     break;
                 }
             }
         }
     }
-    public void discardCards(Card[] cards){
+    public void discardCards(List<Card> cards){
         playCards(cards);
     }
 }

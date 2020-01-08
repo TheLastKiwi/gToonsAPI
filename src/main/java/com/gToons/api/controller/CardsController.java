@@ -48,7 +48,7 @@ public class CardsController {
 
         ArrayList<Card> cards = new ArrayList<>();
         for(int i = 0; i < 12; i++){
-            cards.add(CardService.getAllCards()[udc.get(i).getCardId()].copy());
+            cards.add(CardService.getAllCards().get(udc.get(i).getCardId()).copy());
         }
 //        ArrayList<Card> cards = new ArrayList<>();
 //        Game g = new Game();
@@ -67,7 +67,8 @@ public class CardsController {
         if(ouc.isPresent()) {
             List<UserCollection> userCollection = ouc.get();
             for (int i = 0; i < userCollection.size(); i++) {
-                cards.add(CardService.getAllCards()[userCollection.get(i).getCardId()].copy());
+                cards.add(CardService.getAllCards().get(userCollection.get(i).getCardId())
+                        .copy());
             }
 //        ArrayList<Card> cards = new ArrayList<>();
 //        Game g = new Game();

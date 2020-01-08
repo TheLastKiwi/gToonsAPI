@@ -2,11 +2,13 @@ package com.gToons.api.game;
 
 import com.gToons.api.model.Card;
 
+import java.util.List;
+
 public class Board {
     Card board[][] = new Card[4][4];
     Card nullCard = new Card();
 
-    public void playCards(Card cards[]){
+    public void playCards(List<Card> cards){
 
         int startRow = 0;
         if(board[0][0]== null){
@@ -15,9 +17,9 @@ public class Board {
         else {
             startRow = 1;
         }
-        for(int i = 0; i < cards.length; i++){
-            board[startRow][i] = cards[i];
-            board[startRow][i].finalizeLocation(new Location(startRow,i,cards[i].getOwner()));
+        for(int i = 0; i < cards.size(); i++){
+            board[startRow][i] = cards.get(i);
+            board[startRow][i].finalizeLocation(new Location(startRow,i,cards.get(i).getOwner()));
         }
 
     }

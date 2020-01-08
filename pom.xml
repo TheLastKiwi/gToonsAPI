@@ -8,14 +8,14 @@
 		<version>2.2.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from com.securityPOS.FUCKIN.repository -->
 	</parent>
-	<groupId>com.securityPOS</groupId>
-	<artifactId>FUCKIN</artifactId>
+	<groupId>com.gToons</groupId>
+	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>FUCKIN</name>
+	<name>gToons</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>1.11</java.version>
 	</properties>
 
 	<dependencies>

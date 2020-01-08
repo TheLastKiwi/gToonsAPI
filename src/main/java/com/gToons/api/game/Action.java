@@ -3,6 +3,8 @@ package com.gToons.api.game;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class Action {
@@ -12,8 +14,8 @@ public class Action {
 
     UserAction action;
     String token;
-    int playedCards[];
-    int discardedCards[];
+    List<Integer> playedCards;
+    List<Integer> discardedCards;
     boolean replace;
     int lastCard;
 }
