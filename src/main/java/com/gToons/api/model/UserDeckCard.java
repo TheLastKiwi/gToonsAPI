@@ -29,4 +29,9 @@ public class UserDeckCard {
 
     @Column(columnDefinition = "INTEGER", nullable = false)
     private Integer cardId;
+
+    public UserDeckCard(Integer userid, Integer cardId){
+        this.userId=userid;
+        this.cardId=cardId;
+    }
 }

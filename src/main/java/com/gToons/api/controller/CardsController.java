@@ -6,6 +6,7 @@ import com.gToons.api.model.Card;
 import com.gToons.api.model.UserCollection;
 import com.gToons.api.model.UserDeckCard;
 import com.gToons.api.payload.ApiResponse;
+import com.gToons.api.payload.UserDeckRequest;
 import com.gToons.api.repository.UserCollectionRepository;
 import com.gToons.api.repository.UserDeckCardRepository;
 import com.gToons.api.repository.UserRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -99,6 +101,32 @@ public class CardsController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal user = (UserPrincipal)authentication.getPrincipal();
         return user;
+    }
+
+    @PostMapping("/saveDeck")
+    @Transactional
+    public ResponseEntity<?> saveDeck(@RequestBody UserDeckRequest userDeckRequest) {
+        //TODO Validate that the user has the cards in his collection that they are claiming to put in their deck
+        UserPrincipal user = getUser();
+        int userId = user.getId();
+        //Delete deck
+        userDeckCardRepository.deleteByUserId(userId);
+        List<UserDeckCard>  newDeck = new ArrayList<>();
+        for(Integer c : userDeckRequest.getCardIds()){
+            newDeck.add(new UserDeckCard(userId, c));
+        }
+        //save new deck
+        userDeckCardRepository.saveAll(newDeck);
+
+        return ResponseEntity.ok(new ApiResponse(true,"Deck Updated"));
+    }
+
+    @GetMapping("/getPoints")
+    public ResponseEntity<?> getPoints() {
+        //TODO Validate that the user has the cards in his collection that they are claiming to put in their deck
+        UserPrincipal user = getUser();
+
+        return ResponseEntity.ok(new ApiResponse(true,Integer.toString(user.getPoints())));
     }
 
 }

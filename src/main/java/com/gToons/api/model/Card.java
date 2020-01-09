@@ -1,5 +1,6 @@
 package com.gToons.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gToons.api.game.Location;
 import com.gToons.api.game.Player;
 import com.gToons.api.game.effects.Effect;
@@ -12,6 +13,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 //@Entity
 @Builder
@@ -36,12 +39,14 @@ public class Card {
 //    @Column
     String description;
 //    @Transient
-    ArrayList<Effect> effects = new ArrayList<>();
+    @JsonIgnore
+    List<Effect> effects = new ArrayList<>();
 
 //    @Transient
-    HashSet<String> attributes = new HashSet<>();
+    Set<String> attributes = new HashSet<>();
 //    @Transient
-    ArrayList<Effect> unappliedEffects = new ArrayList<>();
+    @JsonIgnore
+    List<Effect> unappliedEffects = new ArrayList<>();
 //    @Transient
     Location location;
 

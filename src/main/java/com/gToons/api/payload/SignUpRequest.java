@@ -11,6 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class SignUpRequest {
+    //TODO Maybe check this somewhere else or correct the error response sent when requirement not met
     @NotBlank
     @Size(min = 3, max = 15)
     private String username;
