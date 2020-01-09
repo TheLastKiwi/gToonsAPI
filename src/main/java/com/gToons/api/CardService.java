@@ -95,14 +95,14 @@ public class CardService {
         int rnum;
         int rplus = 0;
         for(int i = 0; i < 5; i++){
-            rnum = rnd.nextInt(100);
-            if(rnum>95){
+            rnum = rnd.nextInt(allCards.size());
+            if(rnum>allCards.size()*.95){
                 rplus++;
                 pack.add(slams.get(rnd.nextInt(slams.size())).copy());
-            } else if(rnum > 88){
+            } else if(rnum > allCards.size()*.88){
                 rplus++;
                 pack.add(rares.get(rnd.nextInt(rares.size())).copy());
-            } else  if(rnum > 79){
+            } else  if(rnum > allCards.size()*.79){
                 pack.add(uncommons.get(rnd.nextInt(uncommons.size())).copy());
             } else{
                 pack.add(commons.get(rnd.nextInt(commons.size())).copy());
@@ -110,11 +110,11 @@ public class CardService {
         }
         //no rares or slams
         if(rplus == 0){
-            rnum = rnd.nextInt(100);
-            if(rnum > 97){
+            rnum = rnd.nextInt(allCards.size());
+            if(rnum > allCards.size()*.97){
                 pack.set(rnd.nextInt(5), slams.get(rnd.nextInt(slams.size())).copy());
             } else{
-                pack.add(rnd.nextInt(5), rares.get(rnd.nextInt(rares.size())).copy());
+                pack.set(rnd.nextInt(5), rares.get(rnd.nextInt(rares.size())).copy());
             }
         }
         return pack;

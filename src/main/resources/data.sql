@@ -1,8 +1,8 @@
 
 INSERT into user (id, username, email, password_hash, points) VALUES
-(1,"username0","myemail@0","$2a$10$.L737oGz1h2c95IgHLcQ3OS9ny4aWrFqaCPsOThB8jm2lbKgGM3WW",1000),
-(2,"username1","myemail@1","$2a$10$/IDETaHQVniYZhkiOytQguEdjJth0xRftjEsIcDmTGKzSigfHDQFC",1000),
-(3,"username2","email@2.com","$2a$10$trnq39O7w235lP5zJ6RC5u/ny/34PQKC6VjN7DkFZoVzE.cxKXJxS",1000);
+(1,"username0","myemail@0","$2a$10$.L737oGz1h2c95IgHLcQ3OS9ny4aWrFqaCPsOThB8jm2lbKgGM3WW",1000000),
+(2,"username1","myemail@1","$2a$10$/IDETaHQVniYZhkiOytQguEdjJth0xRftjEsIcDmTGKzSigfHDQFC",10000),
+(3,"username2","email@2.com","$2a$10$trnq39O7w235lP5zJ6RC5u/ny/34PQKC6VjN7DkFZoVzE.cxKXJxS",10000);
 
 
 INSERT INTO user_deck (id, user_id, card_id) VALUES

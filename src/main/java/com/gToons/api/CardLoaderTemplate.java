@@ -24,7 +24,7 @@ public class CardLoaderTemplate {
         c.addAttribute(name);
         c.setCharacter(character);
         c.addAttribute(character);
-        c.setCharacter(color);
+        c.setColor(color);
         c.addAttribute(color);
         c.setDescription(description);
         c.setRarity(rarity);

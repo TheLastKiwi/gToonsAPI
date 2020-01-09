@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,9 +73,12 @@ public class CardsController {
         Optional<List<UserCollection>> ouc = userCollectionRepository.findByUserId(user.getId());
         if(ouc.isPresent()) {
             List<UserCollection> userCollection = ouc.get();
-            for (int i = 0; i < userCollection.size(); i++) {
-                cards.add(CardService.getAllCards().get(userCollection.get(i).getCardId())
-                        .copy());
+            userCollection.sort((Comparator.comparingInt(UserCollection::getCardId)));
+            for (UserCollection uc : userCollection) {
+                if(cards.size()==0 || cards.get(cards.size()-1).getId() != uc.getCardId()){
+                    cards.add(CardService.getAllCards().get(uc.getCardId())
+                            .copy());
+                }
             }
         }
         return ResponseEntity.ok(new ApiResponse(true,gson.toJson(cards)));

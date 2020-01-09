@@ -119,6 +119,7 @@ public class Card {
         card.setRarity(rarity);
         card.setCharacter(character);
         card.setDescription(description);
+        card.setColor(color);
         for(Effect e: effects){
             card.addEffect(e.copy());
         }

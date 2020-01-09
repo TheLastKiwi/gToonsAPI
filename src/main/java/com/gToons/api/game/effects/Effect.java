@@ -92,7 +92,7 @@ public abstract class Effect {
             case 15:
                 effect = new ForEachOpponent(value,multiplier,attributes); break;
             case 16:
-                attributes[1] = (String)describer[3];
+                attributes[1] = (String)describer[2];
                 effect = new AllGetForEach(value,multiplier,attributes);
                 break;
             case 17:
