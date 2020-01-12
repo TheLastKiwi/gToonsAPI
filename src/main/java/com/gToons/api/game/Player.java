@@ -26,13 +26,14 @@ public class Player {
     public Player(WebSocketSession wss, int pid){
         socket = wss;
         id = pid;
+        for(int i = 0; i < HAND_SIZE; i++)hand.add(null);
     }
     public WebSocketSession getSocket(){
         return socket;
     }
     public void draw(){
         //You only draw until full so draw a card for every open slot in your hand
-        for(int i = 0; i < hand.size(); i++){
+        for(int i = 0; i < HAND_SIZE; i++){
             if(hand.get(i) == null){
                 hand.set(i, deck.draw());
             }

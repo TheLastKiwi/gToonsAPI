@@ -5,6 +5,7 @@ import com.gToons.api.CardService;
 import com.gToons.api.game.effects.Effect;
 import com.gToons.api.model.Card;
 import com.gToons.api.model.UserDeckCard;
+import com.gToons.api.payload.SocketResponse;
 import com.gToons.api.repository.UserDeckCardRepository;
 import com.google.gson.Gson;
 import lombok.Getter;
@@ -33,14 +34,18 @@ public class Game {
     int phase = 0;
     Gson gson = new Gson();
     UserDeckCardRepository userDeckCardRepository;
-    public Game(Player p1, Player p2, @Autowired UserDeckCardRepository  udcr){
+    Card noCardTemplate = Card.builder().id(-1).name("Default").build();
+    public Game(Player player1, Player player2, @Autowired UserDeckCardRepository  udcr){
         userDeckCardRepository = udcr;
+        p1=player1;
+        p2=player2;
         List<Card> d = getDeckFromDB(p1.getId());
         p1.setDeck(new Deck(d));
         d = getDeckFromDB(p2.getId());
         p2.setDeck(new Deck(d));
         //Todo pick a random card from both decks, return both to users, record the color
-        //If possible also send jwt or user ID though here encapsulated from controller headers
+        action(null,p1.getSocket());
+        action(null,p2.getSocket());
     }
     private List<Card> getDeckFromDB(int pid){
         List<Integer> intCards = new ArrayList<>();
@@ -51,15 +56,6 @@ public class Game {
             for (UserDeckCard c : pCards) {
                 intCards.add(c.getCardId());
             }
-
-//        if(pid == 100) {
-//            //DB Call return card from deck as a List<Integer>
-//            intCards = Arrays.asList(1,2,3,4,5,6);
-//        }
-//        else {
-//            intCards = Arrays.asList(21,22,23,24,25,26);
-//        }
-
 
             for (int i = 0; i < intCards.size(); i++) {
                 cards.add(CardService.getAllCards().get(intCards.get(i)).copy());
@@ -112,11 +108,11 @@ public class Game {
                     ifBothReadyAdvancePhase();
                     break;
                 case 4: //Replace card option - receive 1 card in lastCard and replace(boolean) | Return winner/loser
-                    List<Card>  lastCard =  getCardsFromInts(new ArrayList<>(action.lastCard));
+                    Card lastCard = CardService.getAllCards().get(action.lastCard);
                     if(action.isReplace()){
                         player.setPoints(-10);
                     }
-                    playLastCard(lastCard.get(0),player);
+                    playLastCard(lastCard,player);
 
                     player.setReady(true);
                     ifBothReadySendLastCard(player);
@@ -130,8 +126,8 @@ public class Game {
     private void ifBothReadySendR1Cards(Player p){
         try {
             if(p1.isReady() && p2.isReady()) {
-                p1.getSocket().sendMessage(new TextMessage(gson.toJson(p2.getBoard().board[0])));
-                p2.getSocket().sendMessage(new TextMessage(gson.toJson(p1.getBoard().board[0])));
+                p1.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p2.getBoard().board[0],phase+1))));
+                p2.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p1.getBoard().board[0],phase+1))));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -140,8 +136,8 @@ public class Game {
     private void ifBothReadySendR2Cards(Player p){
         try {
             if(p1.isReady() && p2.isReady()) {
-                p1.getSocket().sendMessage(new TextMessage(gson.toJson(p2.getBoard().board[1])));
-                p2.getSocket().sendMessage(new TextMessage(gson.toJson(p1.getBoard().board[1])));
+                p1.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p2.getBoard().board[1],phase+1))));
+                p2.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p1.getBoard().board[1],phase+1))));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -150,8 +146,8 @@ public class Game {
     private void ifBothReadySendLastCard(Player p){
         try {
             if(p1.isReady() && p2.isReady()) {
-                p1.getSocket().sendMessage(new TextMessage(gson.toJson(p2.getBoard().board[1][2])));
-                p2.getSocket().sendMessage(new TextMessage(gson.toJson(p1.getBoard().board[1][2])));
+                p1.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p2.getBoard().board[1][2],phase+1))));
+                p2.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p1.getBoard().board[1][2],phase+1))));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -198,7 +194,9 @@ public class Game {
         }
 
         List<Effect> cardEffects;
+        int index =-1;
         for(Card c : allCardsInPlay){
+            index++;
             if(c.isNullified()){
                 continue;
             }
@@ -250,12 +248,19 @@ public class Game {
 
         if(p1.isReady() && p2.isReady()){
             try {
-                p1.getSocket().sendMessage(new TextMessage(gson.toJson(p1.getHand(), Card[].class)));
-                p2.getSocket().sendMessage(new TextMessage(gson.toJson(p2.getHand(), Card[].class)));
+                p1.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(cardListToArray(p1.getHand()),phase+1))));
+                p2.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(cardListToArray(p2.getHand()),phase+1))));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+    private Card[] cardListToArray(List<Card> cards){
+        Card[] retCards = new Card[cards.size()];
+        for(int i =0;i < cards.size(); i++){
+            retCards[i] = cards.get(i);
+        }
+        return  retCards;
     }
     private void playLastCard(Card c, Player player){
         player.board.playLastCard(c);
@@ -266,6 +271,10 @@ public class Game {
     private List<Card>  getCardsFromInts(List<Integer> intCards){
         List<Card> cards= new ArrayList<>();
         for(int i = 0; i < intCards.size(); i++){
+            if(intCards.get(i) == -1){
+                cards.add(noCardTemplate);
+                continue;
+            }
             cards.add(CardService.getAllCards().get(intCards.get(i)));
         }
         return cards;

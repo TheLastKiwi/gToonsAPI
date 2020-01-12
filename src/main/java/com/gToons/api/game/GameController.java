@@ -20,5 +20,9 @@ public class GameController {
         Game g = userInGame.get(session.getId());
         //g.playerLeft(session)
     }
+    public void addGame(Game g){
+        userInGame.put(g.getP1().getSocket().getId(),g);
+        userInGame.put(g.getP2().getSocket().getId(),g);
+    }
 
 }

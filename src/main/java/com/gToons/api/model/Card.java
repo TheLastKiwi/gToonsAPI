@@ -95,23 +95,7 @@ public class Card {
         effects.add(e);
     }
     //deep copy
-    /*
-        int id;
 
-    @Column(nullable = false)
-    String name = "";
-    @Column(nullable = false)
-    String rarity;
-    @Column(nullable = false)
-    String character;
-    @Column
-    String description;
-    @Transient
-    ArrayList<Effect> effects = new ArrayList<>();
-
-    @Transient
-    HashSet<String> attributes = new HashSet<>();
-     */
     public Card copy(){
         Card card = new Card();
         card.setId(id);

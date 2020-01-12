@@ -19,6 +19,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MatchmakingService {
     @Autowired
     UserDeckCardRepository udcr;
+    @Autowired
+    GameController gameController;
     BlockingQueue<Player> gameQueue = new LinkedBlockingQueue<>();
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -39,6 +41,7 @@ public class MatchmakingService {
             System.out.println("Game created between 2 users");
 
             Game g = new Game(gameQueue.poll(),gameQueue.poll(),udcr);
+            gameController.addGame(g);
             return g;
         }
         return null;

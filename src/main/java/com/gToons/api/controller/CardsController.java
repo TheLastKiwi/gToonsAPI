@@ -110,14 +110,18 @@ public class CardsController {
 
     @PostMapping("/saveDeck")
     @Transactional
-    public ResponseEntity<?> saveDeck(@RequestBody UserDeckRequest userDeckRequest) {
+    public ResponseEntity<?> saveDeck(@RequestBody UserDeckRequest deck) {
         //TODO Validate that the user has the cards in his collection that they are claiming to put in their deck
         UserPrincipal user = getUser();
         int userId = user.getId();
+        /*
+           TODO Possibly compute difference and only submit the deltas so we aren't deleting the whole deck and
+            Adding a whole new one if only one card changed. This would cut down on database usage
+        */
         //Delete deck
         userDeckCardRepository.deleteByUserId(userId);
         List<UserDeckCard>  newDeck = new ArrayList<>();
-        for(Integer c : userDeckRequest.getCardIds()){
+        for(Integer c : deck.getCardIds()){
             newDeck.add(new UserDeckCard(userId, c));
         }
         //save new deck
@@ -128,7 +132,6 @@ public class CardsController {
 
     @GetMapping("/getPoints")
     public ResponseEntity<?> getPoints() {
-        //TODO Validate that the user has the cards in his collection that they are claiming to put in their deck
         UserPrincipal user = getUser();
 
         return ResponseEntity.ok(new ApiResponse(true,Integer.toString(user.getPoints())));
