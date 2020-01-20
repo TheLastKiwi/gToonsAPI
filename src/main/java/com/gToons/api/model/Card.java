@@ -104,10 +104,16 @@ public class Card {
         card.setCharacter(character);
         card.setDescription(description);
         card.setColor(color);
+
+        card.setOwner(owner);
+        card.setNullified(nullified);
+
         for(Effect e: effects){
             card.addEffect(e.copy());
         }
-        for(String attribute : attributes) card.addAttribute(attribute);
+        for(String attribute : attributes){
+            card.addAttribute(attribute);
+        }
         return card;
     }
 

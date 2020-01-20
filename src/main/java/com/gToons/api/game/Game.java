@@ -15,6 +15,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class Game {
     //TODO add functionality to send back game state at each card reveal
 
     Player p1, p2;
+    Board p1Board, p2Board;
+
     int phase = 0;
     Gson gson = new Gson();
     UserDeckCardRepository userDeckCardRepository;
@@ -124,14 +127,41 @@ public class Game {
 
     }
     private void ifBothReadySendR1Cards(Player p){
+
         try {
             if(p1.isReady() && p2.isReady()) {
-                p1.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p2.getBoard().board[0],phase+1))));
-                p2.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(p1.getBoard().board[0],phase+1))));
+
+                //calculate buffs and return
+                ArrayList<Card> buffs  = calculateBuffsFirstFour();
+                p1.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(buffs,phase+1))));
+                p2.getSocket().sendMessage(new TextMessage(gson.toJson(new SocketResponse(buffs,phase+1))));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private ArrayList<Card> calculateBuffsFirstFour(){
+        ArrayList<Card> buffs = new ArrayList<>();
+        for(int i = 0; i < 4; i++){
+            Card c = p1.board.getCard(i,0);
+            buffs.add(c.copy());
+
+            //get buffs that are applied to this card, and buffs that this card applies to others
+            ArrayList<Location> locations = new ArrayList<>();
+            for(Effect e : c.getEffects()){
+                applyBuffs(p1,e.getImpactedLocations(),e);
+            }
+
+
+            buffs.add(p2.board.getCard(i,0).copy());
+            //get buffs that are applied to this card, and buffs that this card applies to others
+            buffs.addAll(applyBuffs(i,0));
+        }
+        return buffs;
+    }
+    private ArrayList<Card> applyBuffs(Player sourcePlayer, ArrayList<Location> impactedLocations, Effect e){
+        //These are just cards being sent to the front end, they don't need to be fully complete cards.
+
     }
     private void ifBothReadySendR2Cards(Player p){
         try {

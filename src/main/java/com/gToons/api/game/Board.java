@@ -1,11 +1,13 @@
 package com.gToons.api.game;
 
+import com.gToons.api.game.effects.Effect;
 import com.gToons.api.model.Card;
 
 import java.util.List;
 
 public class Board {
-    Card board[][] = new Card[4][4];
+    Card[][] board = new Card[4][4];
+    Effect[][] effects = new Effect[4][4];
     Card nullCard = new Card();
 
     public void playCards(List<Card> cards){

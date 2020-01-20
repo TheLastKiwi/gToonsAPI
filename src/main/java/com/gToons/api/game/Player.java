@@ -1,5 +1,6 @@
 package com.gToons.api.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gToons.api.model.Card;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,14 +14,21 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class Player {
+    @JsonIgnore
     private WebSocketSession socket;
     private int id;
+    @JsonIgnore
     private boolean isReady = false;
+    @JsonIgnore
     private Deck deck;
+    @JsonIgnore
     private List<Card> hand = new ArrayList<>();
+    @JsonIgnore
     int points;
+    @JsonIgnore
     Board board = new Board();
 
+    @JsonIgnore
     static final int HAND_SIZE = 6;
 
     public Player(WebSocketSession wss, int pid){
